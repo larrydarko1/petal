@@ -13,39 +13,21 @@ $transition-speed: 0.2s;
 }
 
 :root {
-    --bg: #faf8f5;
-    --bg-toolbar: #f2efe9;
-    --border: #e4dfd6;
-    --text: #2c2926;
-    --text-secondary: #a09889;
-    --accent: #7c6f5b;
-    --accent-glow: #b8a88a;
-    --button-hover: rgba(124, 111, 91, 0.1);
-    --button-active: rgba(124, 111, 91, 0.18);
-    --dot-modified: #c4956a;
-    --placeholder: #c4bdb2;
-    --scrollbar-thumb: #d4cec4;
+    --bg: #1e1e2e;
+    --bg-toolbar: #181825;
+    --border: #313244;
+    --text: #cdd6f4;
+    --text-secondary: #a6adc8;
+    --accent: #cba6f7;
+    --accent-glow: rgba(203, 166, 247, 0.15);
+    --button-hover: rgba(203, 166, 247, 0.1);
+    --button-active: rgba(203, 166, 247, 0.18);
+    --dot-modified: #cba6f7;
+    --placeholder: #6c7086;
+    --scrollbar-thumb: #313244;
     --scrollbar-track: transparent;
 
     font-family: $font-ui;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-
-    @media (prefers-color-scheme: dark) {
-        --bg: #161616;
-        --bg-toolbar: #1c1c1c;
-        --border: #2a2a2a;
-        --text: #c8c2b8;
-        --text-secondary: #5c5650;
-        --accent: #a89882;
-        --accent-glow: #c4b49a;
-        --button-hover: rgba(168, 152, 130, 0.1);
-        --button-active: rgba(168, 152, 130, 0.18);
-        --dot-modified: #d4a373;
-        --placeholder: #3d3835;
-        --scrollbar-thumb: #2e2a27;
-        --scrollbar-track: transparent;
-    }
 }
 
 html,
