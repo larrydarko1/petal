@@ -158,19 +158,43 @@ onUnmounted(() => {
 
 <template>
     <div class="notepad">
-        <header class="toolbar" data-tauri-drag-region>
+        <header
+            class="toolbar"
+            data-tauri-drag-region>
             <div class="file-info">
-                <span v-if="isModified" class="modified-dot" />
+                <span
+                    v-if="isModified"
+                    class="modified-dot" />
                 <span class="file-name">{{ fileName }}</span>
             </div>
             <nav class="actions">
-                <button title="New file (⌘N)" @click="newFile">new</button>
-                <button title="Open file (⌘O)" @click="openFile">open</button>
-                <button title="Save file (⌘S)" @click="saveFile">save</button>
-                <button title="Save as (⌘⇧S)" @click="saveFileAs">save as</button>
+                <button
+                    title="New file (⌘N)"
+                    @click="newFile"
+                    >new</button
+                >
+                <button
+                    title="Open file (⌘O)"
+                    @click="openFile"
+                    >open</button
+                >
+                <button
+                    title="Save file (⌘S)"
+                    @click="saveFile"
+                    >save</button
+                >
+                <button
+                    title="Save as (⌘⇧S)"
+                    @click="saveFileAs"
+                    >save as</button
+                >
             </nav>
         </header>
-        <textarea v-model="content" class="editor" placeholder="Start typing..." spellcheck="false" />
+        <textarea
+            v-model="content"
+            class="editor"
+            placeholder="Start typing..."
+            spellcheck="false" />
     </div>
 </template>
 
