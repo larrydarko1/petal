@@ -7,13 +7,13 @@
  * Headers follow the standard's table, mapped to this layout: a bridge module is the
  * webview's `api/` module for one Tauri surface, so it opens with a line saying which;
  * a composable owns state or lifecycle, so it says what; a component's contract is its
- * props, so it carries none. Petal's Rust is not scanned — rustdoc and the Rust gates
- * cover it.
+ * props, so it carries none. In the crate, `lib.rs` always opens with `//!` and a command
+ * domain says what it owns the same way; `commands.rs` only declares its children.
  */
 import { checkCodeStyle } from '@larrydarko/lint-config/gates/code-style';
 
 checkCodeStyle({
-    scan: ['src'],
+    scan: ['src', 'src-tauri/src', 'src-tauri/build.rs'],
     casing: [
         { files: /\.vue$/, style: 'pascal' },
         { files: /\.ts$/, style: 'camel' },
@@ -22,5 +22,6 @@ checkCodeStyle({
         { files: /^src\/bridge\/.*\.ts$/, require: 'comment' },
         { files: /^src\/composables\/.*\.ts$/, require: 'comment' },
         { files: /\.vue$/, require: 'none' },
+        { files: /^src-tauri\/src\/commands\/.*\.rs$/, require: 'rustdoc' },
     ],
 });
