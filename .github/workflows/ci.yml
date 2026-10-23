@@ -35,7 +35,7 @@ jobs:
             - run: npm ci
 
             - name: Audit
-              run: npm audit --audit-level=high --omit=dev
+              run: npm run audit:check
 
             - name: Lint
               run: npm run lint
@@ -43,11 +43,20 @@ jobs:
             - name: Format check
               run: npm run format:check
 
+            - name: package.json
+              run: npm run pkg:check
+
+            - name: Pipeline
+              run: npm run pipeline:check
+
             - name: Type check
               run: npm run typecheck
 
             - name: Dead code
               run: npm run dead:check
+
+            - name: tsconfigs
+              run: npm run tsconfig:check
 
             - name: Tests (with 80% coverage enforcement)
               run: npm run test:coverage
