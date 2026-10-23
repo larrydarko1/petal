@@ -6,6 +6,8 @@ import { guardWindowClose } from '@/bridge/window';
 import { useDocument } from '@/composables/useDocument';
 import { useShortcuts } from '@/composables/useShortcuts';
 
+const unlisteners: Unlisten[] = [];
+
 const {
     content,
     fileName,
@@ -19,8 +21,6 @@ const {
     confirmClose,
 } = useDocument();
 useShortcuts({ newFile, openFile, saveFile, saveFileAs });
-
-const unlisteners: Unlisten[] = [];
 
 onMounted(async () => {
     // Listen before taking the queue, so a file opened in between is announced rather than lost.

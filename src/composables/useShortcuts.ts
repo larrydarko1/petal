@@ -8,16 +8,6 @@ export type ShortcutActions = {
     saveFileAs: () => Promise<void>;
 };
 
-/** The action a key press asks for, or `null` when it is not a shortcut. */
-function actionFor(event: KeyboardEvent): keyof ShortcutActions | null {
-    if (!event.metaKey && !event.ctrlKey) return null;
-    const key = event.key.toLowerCase();
-    if (key === 'n') return 'newFile';
-    if (key === 'o') return 'openFile';
-    if (key === 's') return event.shiftKey ? 'saveFileAs' : 'saveFile';
-    return null;
-}
-
 export function useShortcuts(actions: ShortcutActions): void {
     function onKeydown(event: KeyboardEvent): void {
         const action = actionFor(event);
@@ -33,4 +23,14 @@ export function useShortcuts(actions: ShortcutActions): void {
     onUnmounted(() => {
         window.removeEventListener('keydown', onKeydown);
     });
+}
+
+/** The action a key press asks for, or `null` when it is not a shortcut. */
+function actionFor(event: KeyboardEvent): keyof ShortcutActions | null {
+    if (!event.metaKey && !event.ctrlKey) return null;
+    const key = event.key.toLowerCase();
+    if (key === 'n') return 'newFile';
+    if (key === 'o') return 'openFile';
+    if (key === 's') return event.shiftKey ? 'saveFileAs' : 'saveFile';
+    return null;
 }

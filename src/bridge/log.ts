@@ -7,6 +7,12 @@ import { error, info, warn } from '@tauri-apps/plugin-log';
 type Fields = Record<string, unknown>;
 type Write = typeof info;
 
+export const log = {
+    info: (message: string, fields: Fields = {}): void => send(info, message, fields),
+    warn: (message: string, fields: Fields = {}): void => send(warn, message, fields),
+    error: (message: string, fields: Fields = {}): void => send(error, message, fields),
+};
+
 /** The plugin takes strings. An Error becomes its stack, so the line says where it came from. */
 function describe(value: unknown): string {
     if (value instanceof Error) return value.stack ?? String(value);
@@ -25,9 +31,3 @@ function send(write: Write, message: string, fields: Fields): void {
         // The log is the channel that failed, and the webview has no console: nowhere is left to say so.
     });
 }
-
-export const log = {
-    info: (message: string, fields: Fields = {}): void => send(info, message, fields),
-    warn: (message: string, fields: Fields = {}): void => send(warn, message, fields),
-    error: (message: string, fields: Fields = {}): void => send(error, message, fields),
-};

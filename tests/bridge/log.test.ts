@@ -1,5 +1,5 @@
-import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
 import type { InvokeArgs } from '@tauri-apps/api/core';
+import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { log } from '@/bridge/log';

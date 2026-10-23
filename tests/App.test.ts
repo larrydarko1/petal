@@ -17,15 +17,15 @@ vi.mock('@/bridge/window');
 const unlistenFileOpened = vi.fn();
 const unlistenClose = vi.fn();
 
+const editor = (wrapper: ReturnType<typeof mount>): HTMLTextAreaElement =>
+    wrapper.find('textarea').element as HTMLTextAreaElement;
+
 beforeEach(() => {
     vi.mocked(takePendingFiles).mockResolvedValue({ success: true, data: [] });
     vi.mocked(onFileOpened).mockResolvedValue(unlistenFileOpened);
     vi.mocked(guardWindowClose).mockResolvedValue(unlistenClose);
     vi.mocked(readFile).mockResolvedValue({ success: true, data: 'saved text' });
 });
-
-const editor = (wrapper: ReturnType<typeof mount>): HTMLTextAreaElement =>
-    wrapper.find('textarea').element as HTMLTextAreaElement;
 
 describe('App', () => {
     it('shows Untitled and no modified dot on a clean slate', async () => {

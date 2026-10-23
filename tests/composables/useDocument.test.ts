@@ -12,14 +12,6 @@ vi.mock('@/bridge/files');
 
 const NOTE = '/notes/todo.txt';
 
-beforeEach(() => {
-    vi.mocked(chooseFileToOpen).mockResolvedValue({ success: true, data: NOTE });
-    vi.mocked(chooseFileToSave).mockResolvedValue({ success: true, data: NOTE });
-    vi.mocked(readFile).mockResolvedValue({ success: true, data: 'saved text' });
-    vi.mocked(writeFile).mockResolvedValue({ success: true, data: null });
-    vi.mocked(confirmWarning).mockResolvedValue(true);
-});
-
 /** A document that has `NOTE` open and an unsaved edit. */
 async function editedDocument(): Promise<ReturnType<typeof useDocument>> {
     const doc = useDocument();
@@ -27,6 +19,14 @@ async function editedDocument(): Promise<ReturnType<typeof useDocument>> {
     doc.content.value = 'edited';
     return doc;
 }
+
+beforeEach(() => {
+    vi.mocked(chooseFileToOpen).mockResolvedValue({ success: true, data: NOTE });
+    vi.mocked(chooseFileToSave).mockResolvedValue({ success: true, data: NOTE });
+    vi.mocked(readFile).mockResolvedValue({ success: true, data: 'saved text' });
+    vi.mocked(writeFile).mockResolvedValue({ success: true, data: null });
+    vi.mocked(confirmWarning).mockResolvedValue(true);
+});
 
 describe('a new document', () => {
     it('is Untitled and unmodified', () => {

@@ -8,9 +8,6 @@ import type { ErrorCode } from '@/bridge/errors';
 import { chooseFileToOpen, chooseFileToSave, readFile, writeFile } from '@/bridge/files';
 import { ERROR_MESSAGES } from '@/consts/errorMessages';
 
-const UNTITLED = 'Untitled';
-const UNSAVED_TITLE = 'Unsaved Changes';
-
 type DocumentState = {
     content: Ref<string>;
     fileName: ComputedRef<string>;
@@ -24,15 +21,8 @@ type DocumentState = {
     confirmClose: () => Promise<boolean>;
 };
 
-/** The last segment of a path, on any OS. */
-function baseName(path: string): string {
-    const name = path.split(/[\\/]/).at(-1);
-    return name === undefined || name === '' ? UNTITLED : name;
-}
-
-async function report(code: ErrorCode): Promise<void> {
-    await showError(ERROR_MESSAGES[code]);
-}
+const UNTITLED = 'Untitled';
+const UNSAVED_TITLE = 'Unsaved Changes';
 
 export function useDocument(): DocumentState {
     const content = ref('');
@@ -135,4 +125,14 @@ export function useDocument(): DocumentState {
         saveFileAs,
         confirmClose,
     };
+}
+
+/** The last segment of a path, on any OS. */
+function baseName(path: string): string {
+    const name = path.split(/[\\/]/).at(-1);
+    return name === undefined || name === '' ? UNTITLED : name;
+}
+
+async function report(code: ErrorCode): Promise<void> {
+    await showError(ERROR_MESSAGES[code]);
 }
