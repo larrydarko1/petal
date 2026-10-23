@@ -1,0 +1,18 @@
+// Global stylesheet — imported once by main.ts, and the only file in the app
+// that pulls in a module which emits CSS.
+
+// ── Architecture ──────────────────────────────────────────────────────────────
+// index.scss       → this file; `@use`s every partial that emits
+//   _theme.scss      → the palette, as CSS custom properties
+//   _base.scss       → reset, document shell, scrollbar, reduced motion
+// _variables.scss  → design tokens and the palette map. EMITS NOTHING, and is
+//                    the only module vite.config.ts injects into every SFC
+
+// ── Why the split ─────────────────────────────────────────────────────────────
+// Each SFC `<style>` block is its own Sass compilation, and _variables.scss is
+// prepended to every one. Anything it reached that emits a rule would ship once
+// PER COMPONENT. Everything that emits lives here instead, and this file has
+// exactly one importer.
+
+@use '@/styles/theme';
+@use '@/styles/base';

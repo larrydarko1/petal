@@ -1,0 +1,17 @@
+// The palette as CSS: one custom property per colour, and the native colour
+// scheme, so the scrollbar and the dialogs match. Reached only through
+// index.scss, so it is compiled once.
+@use '@/styles/variables' as *;
+
+@mixin emit-theme($map, $scheme: dark) {
+    color-scheme: $scheme;
+
+    @each $key, $value in $map {
+        --color-#{$key}: #{$value};
+    }
+}
+
+:root,
+[data-theme='default'] {
+    @include emit-theme($theme-default, dark);
+}

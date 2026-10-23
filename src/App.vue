@@ -82,8 +82,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped lang="scss">
-@use './style.scss' as *;
-
 .notepad {
     display: flex;
     flex-direction: column;
@@ -93,34 +91,35 @@ onUnmounted(() => {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 14px;
+        padding: 0 $space-5;
         height: $toolbar-height;
         min-height: $toolbar-height;
-        border-bottom: 1px solid var(--border);
-        background: var(--bg-toolbar);
+        border-bottom: $border-width solid $color-border;
+        background: $color-surface;
         user-select: none;
+        // stylelint-disable-next-line property-no-vendor-prefix -- WKWebView, the macOS webview, still reads only the prefixed property.
         -webkit-user-select: none;
 
         .file-info {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: $space-3;
             min-width: 0;
 
             .modified-dot {
-                width: 7px;
-                height: 7px;
-                border-radius: 50%;
-                background: var(--dot-modified);
+                width: $dot-size;
+                height: $dot-size;
+                border-radius: $radius-round;
+                background: $color-accent;
                 flex-shrink: 0;
             }
 
             .file-name {
-                font-family: $font-stack;
-                font-size: 12px;
-                font-weight: 500;
-                letter-spacing: 0.02em;
-                color: var(--text-secondary);
+                font-family: $font-family-mono;
+                font-size: $font-size-sm;
+                font-weight: $font-weight-medium;
+                letter-spacing: $letter-spacing-normal;
+                color: $color-text-muted;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -129,30 +128,30 @@ onUnmounted(() => {
 
         .actions {
             display: flex;
-            gap: 2px;
+            gap: $space-1;
 
             button {
                 background: none;
                 border: none;
-                padding: 4px 10px;
-                border-radius: $btn-radius;
-                font-family: $font-stack;
-                font-size: 11.5px;
-                font-weight: 500;
-                letter-spacing: 0.03em;
-                color: var(--text-secondary);
+                padding: $space-2 $space-4;
+                border-radius: $radius-md;
+                font-family: $font-family-mono;
+                font-size: $font-size-xs;
+                font-weight: $font-weight-medium;
+                letter-spacing: $letter-spacing-wide;
+                color: $color-text-muted;
                 cursor: pointer;
                 transition:
-                    background $transition-speed,
-                    color $transition-speed;
+                    background $transition-base,
+                    color $transition-base;
 
                 &:hover {
-                    background: var(--button-hover);
-                    color: var(--text);
+                    background: $color-accent-hover;
+                    color: $color-text;
                 }
 
                 &:active {
-                    background: var(--button-active);
+                    background: $color-accent-active;
                 }
             }
         }
@@ -160,26 +159,26 @@ onUnmounted(() => {
 
     .editor {
         flex: 1;
-        padding: 24px 28px;
+        padding: $space-6 $space-7;
         border: none;
         outline: none;
         resize: none;
-        background: var(--bg);
-        color: var(--text);
-        font-family: $font-stack;
-        font-size: 13.5px;
-        line-height: 1.75;
-        letter-spacing: 0.01em;
+        background: $color-bg;
+        color: $color-text;
+        font-family: $font-family-mono;
+        font-size: $font-size-md;
+        line-height: $line-height-relaxed;
+        letter-spacing: $letter-spacing-tight;
         tab-size: 4;
-        caret-color: var(--accent);
+        caret-color: $color-accent;
 
         &::placeholder {
-            color: var(--placeholder);
+            color: $color-placeholder;
             font-style: italic;
         }
 
         &::selection {
-            background: var(--button-active);
+            background: $color-accent-active;
         }
     }
 }

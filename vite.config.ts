@@ -11,6 +11,19 @@ export default defineConfig({
     resolve: {
         alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
     },
+    css: {
+        preprocessorOptions: {
+            scss: {
+                // The tokens, in every SFC — never the folder, whose index.scss would ship every
+                // global rule once per component. Files inside styles/ are exempt: they @use
+                // _variables.scss themselves, and index.scss is imported by main.ts.
+                additionalData: (source: string, filename: string) =>
+                    filename.replaceAll('\\', '/').includes('/src/styles/')
+                        ? source
+                        : `@use '@/styles/variables' as *;\n${source}`,
+            },
+        },
+    },
     // Keep Rust's compile errors on screen instead of clearing them away.
     clearScreen: false,
     server: {

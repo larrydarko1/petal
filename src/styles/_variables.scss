@@ -1,0 +1,86 @@
+// Design tokens — every `$`-name the app is allowed to use, and the palette.
+// Owns: the typography, spacing, radius, size and motion scales, the palette as
+// a map, and the `$color-*` aliases SFCs write instead of `var()`.
+// Does NOT own: turning the palette into CSS (_theme.scss).
+// vite.config.ts injects this file into every SFC compilation. Nothing here
+// emits a byte of CSS, which is what makes that safe.
+
+// ── Typography ────────────────────────────────────────────────────────────────
+
+$font-family: -apple-system, blinkmacsystemfont, 'Segoe UI', system-ui, sans-serif;
+$font-family-mono: 'SF Mono', 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
+
+$font-weight-medium: 500;
+
+$font-size-xs: 0.7188rem; // 11.5px — the toolbar buttons
+$font-size-sm: 0.75rem; // 12px — the file name
+$font-size-md: 0.8438rem; // 13.5px — the text being edited
+
+// The editor's, not a paragraph's: monospace text being written, where the gap
+// between lines is what keeps a long note readable.
+$line-height-relaxed: 1.75;
+
+$letter-spacing-tight: 0.01em;
+$letter-spacing-normal: 0.02em;
+$letter-spacing-wide: 0.03em;
+
+// ── Spacing ───────────────────────────────────────────────────────────────────
+
+$space-1: 0.125rem; // 2px
+$space-2: 0.25rem; // 4px
+$space-3: 0.5rem; // 8px
+$space-4: 0.625rem; // 10px
+$space-5: 0.875rem; // 14px
+$space-6: 1.5rem; // 24px
+$space-7: 1.75rem; // 28px
+
+// ── Radii and borders ─────────────────────────────────────────────────────────
+
+$radius-sm: 0.1875rem; // 3px
+$radius-md: 0.5rem; // 8px
+// Larger than anything it rounds, so a square becomes a circle and anything
+// wider a capsule.
+$radius-round: 9999rem;
+
+$border-width: 1px;
+
+// ── Sizes ─────────────────────────────────────────────────────────────────────
+
+$toolbar-height: 40px;
+$dot-size: 7px;
+$scrollbar-width: 6px;
+
+// ── Motion ────────────────────────────────────────────────────────────────────
+
+// Not zero: a hair of duration means transitionend still fires for code
+// waiting on it.
+$duration-none: 0.01ms;
+$duration-base: 0.2s;
+
+$transition-base: $duration-base ease;
+
+// ── Palette ───────────────────────────────────────────────────────────────────
+
+// Raw values, not `color-mix()` over the accent: Petal runs on WebKit versions
+// that predate it.
+$theme-default: (
+    'bg': #1e1e2e,
+    'surface': #181825,
+    'border': #313244,
+    'text': #cdd6f4,
+    'text-muted': #a6adc8,
+    'accent': #cba6f7,
+    'accent-hover': rgb(203 166 247 / 10%),
+    'accent-active': rgb(203 166 247 / 18%),
+    'placeholder': #6c7086,
+);
+
+$color-bg: var(--color-bg);
+$color-surface: var(--color-surface);
+$color-border: var(--color-border);
+$color-text: var(--color-text);
+$color-text-muted: var(--color-text-muted);
+$color-accent: var(--color-accent);
+$color-accent-hover: var(--color-accent-hover);
+$color-accent-active: var(--color-accent-active);
+$color-placeholder: var(--color-placeholder);
