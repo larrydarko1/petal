@@ -67,6 +67,15 @@ jobs:
             - name: Refactoring markers
               run: npm run refactor:check
 
+            - name: Tauri security
+              run: npm run security:check
+
+            - name: Tauri commands
+              run: npm run commands:check
+
+            - name: Error handling
+              run: npm run error:check
+
             - name: Type check
               run: npm run typecheck
 

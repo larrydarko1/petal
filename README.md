@@ -78,7 +78,7 @@ npm run rust:lint
 npm run rust:test
 ```
 
-Tests live in `tests/`, mirroring `src/`. The standards ESLint cannot see — dead code, declaration order, duplication, the SCSS architecture, the CI pipeline itself and more — are checked by the gates in `scripts/check/`, each with a `<domain>:check` script (`npm run dead:check`, `npm run scss:check`, …).
+Tests live in `tests/`, mirroring `src/`. The standards ESLint cannot see — dead code, declaration order, duplication, the SCSS architecture, the CI pipeline itself and more — are checked by the gates in `scripts/check/`, each with a `<domain>:check` script (`npm run dead:check`, `npm run scss:check`, …). Three are Tauri's: `security:check` reads the CSP and the capabilities, `commands:check` follows each command from Rust to the bridge, and `error:check` covers failures on both sides. The order and code-style gates read the Rust too.
 
 The CI pipeline runs the audit, lint, format check, stylelint, every gate, type-check, tests with coverage, the webview build, and then the Rust checks — use `npm run ci:check` to run the full sequence locally.
 

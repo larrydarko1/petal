@@ -47,6 +47,9 @@
         "html:check": "node scripts/check/check-html-standards.ts",
         "scss:check": "node scripts/check/check-scss-standards.ts",
         "declorder:check": "node scripts/check/check-declaration-order.ts",
+        "security:check": "node scripts/check/check-tauri-security.ts",
+        "commands:check": "node scripts/check/check-tauri-commands.ts",
+        "error:check": "node scripts/check/check-error-handling.ts",
         "refactor:check": "node scripts/check/check-refactoring.ts",
         "dup:check": "node scripts/check/check-duplication.ts",
         "tsconfig:check": "node scripts/check/check-tsconfigs.ts",
@@ -59,7 +62,7 @@
         "tauri": "tauri",
         "icons:generate": "tauri icon src/assets/icon.svg",
         "prepare": "husky",
-        "ci:check": "npm run audit:check && npm run lint && npm run format:check && npm run stylelint && npm run pkg:check && npm run pipeline:check && npm run code:check && npm run declorder:check && npm run html:check && npm run scss:check && npm run refactor:check && npm run typecheck && npm run dup:check && npm run dead:check && npm run tsconfig:check && npm run test:coverage && npm run test:check && npm run rust:fmt && npm run rust:lint && npm run rust:test && vite build"
+        "ci:check": "npm run audit:check && npm run lint && npm run format:check && npm run stylelint && npm run pkg:check && npm run pipeline:check && npm run code:check && npm run declorder:check && npm run html:check && npm run scss:check && npm run refactor:check && npm run security:check && npm run commands:check && npm run error:check && npm run typecheck && npm run dup:check && npm run dead:check && npm run tsconfig:check && npm run test:coverage && npm run test:check && npm run rust:fmt && npm run rust:lint && npm run rust:test && vite build"
     },
     "dependencies": {
         "@tauri-apps/api": "^2.12.4",
