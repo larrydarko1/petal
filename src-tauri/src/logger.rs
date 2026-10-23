@@ -1,6 +1,8 @@
 //! The app's log: a file in the OS log directory (`~/Library/Logs/<identifier>/` on macOS),
-//! rotated at 1 MB, and stdout for `tauri dev`. The plugin's own format drops a record's
-//! key-values, so this one appends them: `log::warn!(path:% = p.display(); "File not found")`.
+//! rotated at 1 MB, and stdout for `tauri dev`.
+//!
+//! The plugin's own format drops a record's key-values, so this one appends them:
+//! `log::warn!(path:% = p.display(); "File not found")`.
 
 use std::fmt::Write as _;
 

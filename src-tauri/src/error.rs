@@ -1,5 +1,7 @@
-//! The error every command returns. It crosses to the webview as its code alone: the
-//! detail — an OS message that names a path on the user's disk — stays in the log.
+//! The error every command returns.
+//!
+//! It crosses to the webview as its code alone: the detail — an OS message that names a
+//! path on the user's disk — stays in the log.
 
 use serde::{Serialize, Serializer};
 
