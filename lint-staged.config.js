@@ -1,3 +1,3 @@
 import { lintStaged } from '@larrydarko/lint-config/lint-staged';
 
-export default lintStaged();
+export default lintStaged({ stylelint: true });

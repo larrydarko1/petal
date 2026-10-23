@@ -43,6 +43,9 @@ jobs:
             - name: Format check
               run: npm run format:check
 
+            - name: Stylelint
+              run: npm run stylelint
+
             - name: package.json
               run: npm run pkg:check
 
@@ -54,6 +57,12 @@ jobs:
 
             - name: Declaration order
               run: npm run declorder:check
+
+            - name: HTML standards
+              run: npm run html:check
+
+            - name: SCSS standards
+              run: npm run scss:check
 
             - name: Refactoring markers
               run: npm run refactor:check
