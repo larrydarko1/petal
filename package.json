@@ -41,6 +41,10 @@
         "audit:check": "node scripts/check/check-audit.ts",
         "pkg:check": "node scripts/check/check-package-json.ts",
         "pipeline:check": "node scripts/check/check-pipeline.ts",
+        "code:check": "node scripts/check/check-code-style.ts",
+        "declorder:check": "node scripts/check/check-declaration-order.ts",
+        "refactor:check": "node scripts/check/check-refactoring.ts",
+        "dup:check": "node scripts/check/check-duplication.ts",
         "tsconfig:check": "node scripts/check/check-tsconfigs.ts",
         "dead:check": "node scripts/check/check-dead-code.ts",
         "test": "vitest run",
@@ -50,7 +54,7 @@
         "tauri": "tauri",
         "icons:generate": "tauri icon src/assets/icon.svg",
         "prepare": "husky",
-        "ci:check": "npm run audit:check && npm run lint && npm run format:check && npm run pkg:check && npm run pipeline:check && npm run typecheck && npm run dead:check && npm run tsconfig:check && npm run test:coverage && npm run rust:fmt && npm run rust:lint && npm run rust:test && vite build"
+        "ci:check": "npm run audit:check && npm run lint && npm run format:check && npm run pkg:check && npm run pipeline:check && npm run code:check && npm run declorder:check && npm run refactor:check && npm run typecheck && npm run dup:check && npm run dead:check && npm run tsconfig:check && npm run test:coverage && npm run rust:fmt && npm run rust:lint && npm run rust:test && vite build"
     },
     "dependencies": {
         "@tauri-apps/api": "^2.12.4",

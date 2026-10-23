@@ -49,8 +49,20 @@ jobs:
             - name: Pipeline
               run: npm run pipeline:check
 
+            - name: Code style
+              run: npm run code:check
+
+            - name: Declaration order
+              run: npm run declorder:check
+
+            - name: Refactoring markers
+              run: npm run refactor:check
+
             - name: Type check
               run: npm run typecheck
+
+            - name: Duplication
+              run: npm run dup:check
 
             - name: Dead code
               run: npm run dead:check
