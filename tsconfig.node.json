@@ -1,10 +1,25 @@
 {
+    // The tool configs at the root. Vite and Vitest load them in Node, so they get
+    // Node's types and the bundler's resolution.
+    "extends": "./tsconfig.base.json",
     "compilerOptions": {
-        "composite": true,
-        "skipLibCheck": true,
+        /* Output & Build */
+        "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+        "noEmit": true,
+
+        /* Target & Environment */
+        "target": "ES2024",
         "module": "ESNext",
         "moduleResolution": "bundler",
-        "allowSyntheticDefaultImports": true
+        "lib": ["ES2024"],
+
+        /* Paths & Types */
+        "types": ["node"],
+
+        /* Module System — the config files are bundler-resolved and may import
+           sibling `.ts` files by their real extension. */
+        "allowImportingTsExtensions": true,
+        "moduleDetection": "force"
     },
-    "include": ["vite.config.ts", "vitest.config.ts", "eslint.config.ts", "commitlint.config.ts"]
+    "include": ["vite.config.ts", "vitest.config.ts"]
 }

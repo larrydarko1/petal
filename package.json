@@ -1,10 +1,21 @@
 {
     "name": "petal",
     "version": "1.0.4",
-    "type": "module",
     "description": "A lightweight notepad that does simple things — open, edit, and save plain text files. That's it.",
+    "keywords": [
+        "notepad",
+        "text-editor",
+        "tauri",
+        "desktop",
+        "vue"
+    ],
+    "homepage": "https://github.com/larrydarko1/Petal#readme",
+    "bugs": {
+        "url": "https://github.com/larrydarko1/Petal/issues"
+    },
     "license": "MIT",
     "author": "Lorenzo Mazzola",
+    "type": "module",
     "repository": {
         "type": "git",
         "url": "https://github.com/larrydarko1/Petal.git"
@@ -12,7 +23,8 @@
     "scripts": {
         "dev": "tauri dev",
         "vite:dev": "vite",
-        "build": "vue-tsc --noEmit && vite build",
+        "typecheck": "vue-tsc -b tsconfig.json",
+        "build": "npm run typecheck && vite build",
         "tauri:build": "tauri build",
         "tauri:build:mac:universal": "tauri build --target universal-apple-darwin",
         "tauri:build:mac:arm": "tauri build --target aarch64-apple-darwin",
@@ -21,55 +33,46 @@
         "tauri:build:win": "tauri build",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
-        "format": "prettier --write .",
-        "format:check": "prettier --check .",
-        "type-check": "vue-tsc --noEmit",
+        "format": "prettier --write \"**/*.{ts,js,vue,scss,json,md}\"",
+        "format:check": "prettier --check \"**/*.{ts,js,vue,scss,json,md}\"",
+        "rust:fmt": "cargo fmt --manifest-path src-tauri/Cargo.toml --check",
+        "rust:lint": "cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings",
+        "rust:test": "cargo test --manifest-path src-tauri/Cargo.toml",
         "test": "vitest run",
         "test:watch": "vitest",
         "test:coverage": "vitest run --coverage",
         "preview": "vite preview",
         "tauri": "tauri",
-        "ci:check": "npm audit --audit-level=high --omit=dev && npm run lint && npm run format:check && npm run type-check && npm run build && npm run test",
+        "icons:generate": "tauri icon src/assets/icon.svg",
         "prepare": "husky",
-        "icons:generate": "node scripts/generate-icons.js"
+        "ci:check": "npm audit --audit-level=high --omit=dev && npm run lint && npm run format:check && npm run typecheck && npm run test:coverage && npm run rust:fmt && npm run rust:lint && npm run rust:test && vite build"
     },
     "dependencies": {
-        "@tauri-apps/api": "^2",
-        "@tauri-apps/plugin-dialog": "^2.6.0",
-        "@tauri-apps/plugin-opener": "^2",
-        "vue": "^3.5.13"
+        "@tauri-apps/api": "^2.12.4",
+        "@tauri-apps/plugin-dialog": "^2.8.3",
+        "@tauri-apps/plugin-fs": "^2.7.1",
+        "@tauri-apps/plugin-log": "^2.10.1",
+        "vue": "^3.5.44"
     },
     "devDependencies": {
-        "@commitlint/cli": "^20.5.0",
-        "@commitlint/config-conventional": "^20.5.0",
-        "@tauri-apps/cli": "^2",
-        "@vitejs/plugin-vue": "^6.0.8",
-        "@vitest/coverage-v8": "^4.1.0",
-        "@vue/test-utils": "^2.4.11",
-        "eslint": "^10.1.0",
-        "eslint-config-prettier": "^10.1.8",
-        "eslint-plugin-vue": "^10.8.0",
-        "husky": "^9.1.7",
-        "icon-gen": "^5.0.0",
-        "jsdom": "^29.0.1",
-        "lint-staged": "^16.4.0",
-        "prettier": "^3.8.1",
-        "sass": "^1.98.0",
-        "sharp": "^0.35.3",
-        "typescript": "~5.6.2",
-        "typescript-eslint": "^8.57.1",
-        "vite": "^8.1.5",
-        "vitest": "^4.1.10",
-        "vue-tsc": "^3.3.8"
+        "@larrydarko/lint-config": "^0.1.0-beta.9",
+        "@tauri-apps/cli": "^2.12.4",
+        "@types/node": "^24.9.1",
+        "@vitejs/plugin-vue": "^6.0.10",
+        "@vitest/coverage-v8": "^5.0.5",
+        "@vue/test-utils": "^2.5.1",
+        "@vue/tsconfig": "^0.9.1",
+        "jsdom": "^30.1.3",
+        "sass": "^1.106.1",
+        "typescript": "~6.0.2",
+        "vite": "^8.3.5",
+        "vitest": "^5.0.5",
+        "vue-tsc": "^3.3.13"
     },
-    "private": true,
-    "lint-staged": {
-        "*.{ts,vue}": [
-            "eslint --fix",
-            "prettier --write"
-        ],
-        "*.{scss,json,md}": [
-            "prettier --write"
-        ]
-    }
+    "packageManager": "npm@11.16.0",
+    "engines": {
+        "node": ">=24",
+        "npm": ">=11"
+    },
+    "private": true
 }

@@ -1,0 +1,18 @@
+{
+    /* The Vue preset supplies the DOM environment (target, lib, jsx); the base
+       config supplies the strictness rules. Later entries win, so the base has
+       the final say on any checking flag the preset also sets. */
+    "extends": ["@vue/tsconfig/tsconfig.dom.json", "./tsconfig.base.json"],
+    "compilerOptions": {
+        /* Output & Build */
+        "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+
+        /* Paths & Types */
+        "paths": {
+            "@/*": ["./src/*"]
+        },
+        // The webview has no Node: what it reaches outside the page goes through src/bridge/.
+        "types": ["vite/client"]
+    },
+    "include": ["src/**/*.ts", "src/**/*.vue"]
+}
