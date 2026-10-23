@@ -42,5 +42,10 @@ print_stdout = "deny"
 print_stderr = "deny"
 let_underscore_must_use = "deny"
 allow_attributes_without_reason = "deny"
+# An exception is `#[expect(lint, reason = "…")]`, which fails once the lint stops firing,
+# so a suppression cannot outlive the code it was for.
+allow_attributes = "deny"
+# `commands.rs` beside `commands/`, the layout the Rust Book teaches, not `commands/mod.rs`.
+mod_module_files = "deny"
 # A command receives `State` and its arguments by value: that is how Tauri hands them over.
 needless_pass_by_value = "allow"

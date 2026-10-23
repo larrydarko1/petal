@@ -1,3 +1,6 @@
+//! The app: its plugins, its managed state, the commands the webview may call, and
+//! the files the OS opens with it.
+
 mod commands;
 mod error;
 mod logger;
@@ -7,7 +10,7 @@ use std::path::Path;
 use tauri::{App, AppHandle, Emitter, Manager, PhysicalSize, RunEvent};
 use tauri_plugin_fs::FsExt;
 
-use commands::file::{PendingFiles, FILE_OPENED};
+use crate::commands::file::{PendingFiles, FILE_OPENED};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
