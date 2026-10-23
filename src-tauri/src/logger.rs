@@ -2,7 +2,7 @@
 //! rotated at 1 MB, and stdout for `tauri dev`.
 //!
 //! The plugin's own format drops a record's key-values, so this one appends them:
-//! `log::warn!(path:% = p.display(); "File not found")`.
+//! `log::warn!(path:% = p.display(); "File not found")`. A panic is written there too.
 
 use std::fmt::Write as _;
 
@@ -37,6 +37,18 @@ pub fn plugin<R: Runtime>() -> TauriPlugin<R> {
             ));
         })
         .build()
+}
+
+/// Writes a panic to the log, then hands it to the hook that was installed before.
+///
+/// The default hook prints to stderr, which a released app has nowhere to show, so without
+/// this a panic in a dependency closes the window and leaves no trace.
+pub fn log_panics() {
+    let previous = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |info| {
+        log::error!(panic:% = info; "Panicked");
+        previous(info);
+    }));
 }
 
 /// Collects a record's key-values as ` key=value` pairs.

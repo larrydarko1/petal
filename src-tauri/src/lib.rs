@@ -14,6 +14,7 @@ use crate::commands::file::{PendingFiles, FILE_OPENED};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    logger::log_panics();
     let app = tauri::Builder::default()
         .plugin(logger::plugin())
         .plugin(tauri_plugin_fs::init())
