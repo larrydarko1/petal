@@ -69,13 +69,18 @@ npm run format:check
 # Auto-format source code
 npm run format
 
+# Lint styles
+npm run stylelint
+
 # Rust: format check, Clippy, tests
 npm run rust:fmt
 npm run rust:lint
 npm run rust:test
 ```
 
-Tests live in `tests/`, mirroring `src/`. The CI pipeline runs the audit, lint, format check, type-check, tests with coverage, the webview build, and then the Rust checks — use `npm run ci:check` to run the full sequence locally.
+Tests live in `tests/`, mirroring `src/`. The standards ESLint cannot see — dead code, declaration order, duplication, the SCSS architecture, the CI pipeline itself and more — are checked by the gates in `scripts/check/`, each with a `<domain>:check` script (`npm run dead:check`, `npm run scss:check`, …).
+
+The CI pipeline runs the audit, lint, format check, stylelint, every gate, type-check, tests with coverage, the webview build, and then the Rust checks — use `npm run ci:check` to run the full sequence locally.
 
 ## Building for Production
 
@@ -119,7 +124,11 @@ petal/
 │   │   └── errorMessages.ts    # What the user reads for each error code
 │   ├── App.vue                 # The editor window
 │   ├── main.ts                 # Vue app entry point
-│   ├── style.scss              # Global styles and CSS variables
+│   ├── styles/
+│   │   ├── index.scss          # The global stylesheet, imported once by main.ts
+│   │   ├── _variables.scss     # Tokens and the palette; injected into every SFC, emits nothing
+│   │   ├── _theme.scss         # The palette as CSS custom properties
+│   │   └── _base.scss          # Reset, document shell, scrollbar, reduced motion
 │   └── assets/
 │       ├── demo.png            # Demo screenshot
 │       └── icon.svg            # App icon source (npm run icons:generate)
@@ -137,15 +146,18 @@ petal/
 │   ├── Cargo.toml              # Rust dependencies and Clippy lints
 │   └── tauri.conf.json         # Tauri configuration, CSP included
 ├── tests/                      # Vitest suites, mirroring src/
+├── scripts/check/              # The standards gates, from @larrydarko/lint-config
 ├── .github/
 │   └── workflows/
 │       ├── ci.yml              # CI pipeline (lint, type-check, test, build, Rust checks)
 │       └── release.yml         # Release / distribution workflow
 ├── .husky/                     # Git hooks (pre-commit, commit-msg)
 ├── eslint.config.js            # ESLint, from @larrydarko/lint-config
+├── stylelint.config.js         # Stylelint, from @larrydarko/lint-config
+├── knip.config.js              # What the dead-code gate treats as an entry point
 ├── vite.config.ts              # Vite build configuration
 ├── vitest.config.ts            # Vitest test configuration
-└── tsconfig.*.json             # TypeScript projects: app, node (tool configs), test
+└── tsconfig.*.json             # TypeScript projects: app, node (tool configs), test, scripts
 ```
 
 ## License
