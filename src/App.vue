@@ -1,158 +1,40 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { invoke } from '@tauri-apps/api/core';
-import { listen, type UnlistenFn } from '@tauri-apps/api/event';
-import { getCurrentWindow } from '@tauri-apps/api/window';
-import { open, save, ask } from '@tauri-apps/plugin-dialog';
+import { onMounted, onUnmounted } from 'vue';
 
-// ── Reactive state ───────────────────────────────────────────────────────
+import { onFileOpened, type Unlisten } from '@/bridge/events';
+import { guardWindowClose } from '@/bridge/window';
+import { useDocument } from '@/composables/useDocument';
+import { useShortcuts } from '@/composables/useShortcuts';
 
-const content = ref('');
-const filePath = ref<string | null>(null);
-const savedContent = ref('');
-const isModified = computed(() => content.value !== savedContent.value);
-let unlistenFileOpen: UnlistenFn | undefined;
-let unlistenCloseRequested: UnlistenFn | undefined;
-let forceClose = false;
+const {
+    content,
+    fileName,
+    isModified,
+    newFile,
+    openFile,
+    openPath,
+    openPendingFile,
+    saveFile,
+    saveFileAs,
+    confirmClose,
+} = useDocument();
+useShortcuts({ newFile, openFile, saveFile, saveFileAs });
 
-const fileName = computed(() => {
-    if (!filePath.value) return 'Untitled';
-    const parts = filePath.value.replace(/\\/g, '/').split('/');
-    return parts[parts.length - 1] || 'Untitled';
-});
-
-// ── File operations ──────────────────────────────────────────────────────
-
-async function confirmDiscard(): Promise<boolean> {
-    if (!isModified.value) return true;
-    return await ask('You have unsaved changes. Discard them?', {
-        title: 'Unsaved Changes',
-        kind: 'warning',
-    });
-}
-
-async function loadFileContent(path: string): Promise<void> {
-    try {
-        const text = await invoke<string>('read_text_file', { path });
-        content.value = text;
-        filePath.value = path;
-        savedContent.value = text;
-    } catch {
-        // Silently handled — user sees blank editor
-    }
-}
-
-async function newFile(): Promise<void> {
-    if (!(await confirmDiscard())) return;
-    content.value = '';
-    filePath.value = null;
-    savedContent.value = '';
-}
-
-async function openFile(): Promise<void> {
-    if (!(await confirmDiscard())) return;
-
-    const selected = await open({
-        filters: [{ name: 'Text Files', extensions: ['txt'] }],
-    });
-    if (!selected) return;
-
-    await loadFileContent(selected as string);
-}
-
-async function saveFile(): Promise<void> {
-    if (filePath.value) {
-        try {
-            await invoke('write_text_file', { path: filePath.value, content: content.value });
-            savedContent.value = content.value;
-        } catch {
-            // Silently handled — content remains in editor
-        }
-    } else {
-        await saveFileAs();
-    }
-}
-
-async function saveFileAs(): Promise<void> {
-    const selected = await save({
-        filters: [{ name: 'Text Files', extensions: ['txt'] }],
-        defaultPath: filePath.value ?? 'untitled.txt',
-    });
-    if (!selected) return;
-
-    try {
-        await invoke('write_text_file', { path: selected, content: content.value });
-        filePath.value = selected;
-        savedContent.value = content.value;
-    } catch {
-        // Silently handled — content remains in editor
-    }
-}
-
-// ── Keyboard shortcuts ───────────────────────────────────────────────────
-
-function handleKeydown(e: KeyboardEvent): void {
-    const mod = e.metaKey || e.ctrlKey;
-    if (!mod) return;
-
-    const key = e.key.toLowerCase();
-
-    if (key === 'n') {
-        e.preventDefault();
-        newFile();
-    } else if (key === 'o') {
-        e.preventDefault();
-        openFile();
-    } else if (e.shiftKey && key === 's') {
-        e.preventDefault();
-        saveFileAs();
-    } else if (key === 's') {
-        e.preventDefault();
-        saveFile();
-    }
-}
-
-// ── Lifecycle ────────────────────────────────────────────────────────────
+const unlisteners: Unlisten[] = [];
 
 onMounted(async () => {
-    window.addEventListener('keydown', handleKeydown);
-
-    // Cold start — check for files opened via OS file association
-    try {
-        const pending = await invoke<string[]>('get_pending_files');
-        if (pending.length > 0) {
-            await loadFileContent(pending[0]);
-        }
-    } catch {
-        // Silently handled — app starts with empty editor
-    }
-
-    // Warm start — files opened while app is already running
-    unlistenFileOpen = await listen<string>('open-file', async (event) => {
-        if (!(await confirmDiscard())) return;
-        await loadFileContent(event.payload);
-    });
-
-    // Intercept window close — warn if there are unsaved changes
-    const appWindow = getCurrentWindow();
-    unlistenCloseRequested = await appWindow.onCloseRequested(async (event) => {
-        if (!isModified.value || forceClose) return;
-        event.preventDefault();
-        const confirmed = await ask(
-            'You have unsaved changes. If you close now, all data will be lost. Are you sure?',
-            { title: 'Unsaved Changes', kind: 'warning' },
-        );
-        if (confirmed) {
-            forceClose = true;
-            await appWindow.close();
-        }
-    });
+    // Listen before taking the queue, so a file opened in between is announced rather than lost.
+    unlisteners.push(
+        await onFileOpened((path) => {
+            void openPath(path);
+        }),
+    );
+    unlisteners.push(await guardWindowClose(confirmClose));
+    await openPendingFile();
 });
 
 onUnmounted(() => {
-    window.removeEventListener('keydown', handleKeydown);
-    unlistenFileOpen?.();
-    unlistenCloseRequested?.();
+    for (const unlisten of unlisteners) unlisten();
 });
 </script>
 
@@ -193,6 +75,7 @@ onUnmounted(() => {
         <textarea
             v-model="content"
             class="editor"
+            aria-label="Document text"
             placeholder="Start typing..."
             spellcheck="false" />
     </div>
