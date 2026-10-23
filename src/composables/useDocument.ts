@@ -11,7 +11,7 @@ import { ERROR_MESSAGES } from '@/consts/errorMessages';
 const UNTITLED = 'Untitled';
 const UNSAVED_TITLE = 'Unsaved Changes';
 
-export type DocumentState = {
+type DocumentState = {
     content: Ref<string>;
     fileName: ComputedRef<string>;
     isModified: ComputedRef<boolean>;

@@ -16,9 +16,7 @@
         /* Paths & Types */
         "types": ["node"],
 
-        /* Module System — the config files are bundler-resolved and may import
-           sibling `.ts` files by their real extension. */
-        "allowImportingTsExtensions": true,
+        /* Module System */
         "moduleDetection": "force"
     },
     "include": ["vite.config.ts", "vitest.config.ts"]

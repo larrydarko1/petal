@@ -46,6 +46,9 @@ jobs:
             - name: Type check
               run: npm run typecheck
 
+            - name: Dead code
+              run: npm run dead:check
+
             - name: Tests (with 80% coverage enforcement)
               run: npm run test:coverage
 

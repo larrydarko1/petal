@@ -1,5 +1,5 @@
 import { defineConfig, mergeConfig } from 'vitest/config';
-import viteConfig from './vite.config.ts';
+import viteConfig from './vite.config';
 
 /** The app's own Vite config, so tests resolve `@/` and compile SFCs exactly as the build does. */
 export default mergeConfig(
