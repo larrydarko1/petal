@@ -73,6 +73,10 @@ jobs:
             - name: Tests (with 80% coverage enforcement)
               run: npm run test:coverage
 
+            # Reads the coverage summary the step above wrote.
+            - name: Testing standards
+              run: npm run test:check
+
             # The webview alone; `generate_context!` also needs dist/ to exist before Rust compiles.
             - name: Build (webview)
               run: npx vite build
