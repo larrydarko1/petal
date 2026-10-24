@@ -68,9 +68,19 @@ npm run format:check
 
 # Auto-format source code
 npm run format
+
+# Lint styles
+npm run stylelint
+
+# Rust: format check, Clippy, tests
+npm run rust:fmt
+npm run rust:lint
+npm run rust:test
 ```
 
-Tests live in the `tests/` directory. The CI pipeline runs lint, format check, type-check, build, and tests in that order — use `npm run ci:check` to run the full sequence locally.
+Tests live in `tests/`, mirroring `src/`. The standards ESLint cannot see — dead code, declaration order, duplication, the SCSS architecture, the CI pipeline itself and more — are checked by the gates in `scripts/check/`, each with a `<domain>:check` script (`npm run dead:check`, `npm run scss:check`, …). Three are Tauri's: `security:check` reads the CSP and the capabilities, `commands:check` follows each command from Rust to the bridge, and `error:check` covers failures on both sides. The order and code-style gates read the Rust too.
+
+The CI pipeline runs the audit, lint, format check, stylelint, every gate, type-check, tests with coverage, the webview build, and then the Rust checks — use `npm run ci:check` to run the full sequence locally.
 
 ## Building for Production
 
@@ -89,48 +99,65 @@ Built installers are output to `src-tauri/target/release/bundle/`:
 
 - **Desktop:** Tauri 2 (native macOS, Windows, Linux app)
 - **Frontend:** Vue 3, TypeScript, SCSS
-- **Backend:** Rust — IPC commands for file system access
+- **Backend:** Rust — the official fs, dialog and log plugins, and one command for files the OS opens
 - **Build tool:** [Vite](https://vitejs.dev)
 - **Testing:** [Vitest](https://vitest.dev) + [Vue Test Utils](https://test-utils.vuejs.org)
-- **Linting:** [ESLint](https://eslint.org) (flat config) + [typescript-eslint](https://typescript-eslint.io) + [Prettier](https://prettier.io)
+- **Linting:** [@larrydarko/lint-config](https://www.npmjs.com/package/@larrydarko/lint-config) (ESLint's Tauri family, Prettier, commitlint) + Clippy and rustfmt
 
 ## Project Structure
 
 ```
 petal/
-├── src/                        # Vue 3 frontend
-│   ├── App.vue                 # Single-component editor UI
+├── src/                        # Vue 3 webview
+│   ├── bridge/                 # The only code that imports @tauri-apps/*
+│   │   ├── commands.ts         # One typed function per Rust command
+│   │   ├── dialogs.ts          # Confirm and error message boxes
+│   │   ├── errors.ts           # ERROR_CODES and CommandResult
+│   │   ├── events.ts           # One subscribe function per event Rust emits
+│   │   ├── files.ts            # File pickers, read and write
+│   │   ├── log.ts              # The webview's logger (same file as Rust's)
+│   │   └── window.ts           # The unsaved-changes guard on close
+│   ├── composables/
+│   │   ├── useDocument.ts      # The open document and its file operations
+│   │   └── useShortcuts.ts     # ⌘N, ⌘O, ⌘S, ⌘⇧S
+│   ├── consts/
+│   │   └── errorMessages.ts    # What the user reads for each error code
+│   ├── App.vue                 # The editor window
 │   ├── main.ts                 # Vue app entry point
-│   ├── style.scss              # Global styles and CSS variables
-│   ├── vite-env.d.ts           # Vite environment type declarations
+│   ├── styles/
+│   │   ├── index.scss          # The global stylesheet, imported once by main.ts
+│   │   ├── _variables.scss     # Tokens and the palette; injected into every SFC, emits nothing
+│   │   ├── _theme.scss         # The palette as CSS custom properties
+│   │   └── _base.scss          # Reset, document shell, scrollbar, reduced motion
 │   └── assets/
 │       ├── demo.png            # Demo screenshot
-│       └── icon.svg            # App icon (SVG)
-├── src-tauri/                  # Tauri / Rust backend
+│       └── icon.svg            # App icon source (npm run icons:generate)
+├── src-tauri/                  # Tauri / Rust
 │   ├── src/
-│   │   ├── lib.rs              # IPC commands (read_text_file, write_text_file) + window setup
-│   │   └── main.rs             # Application entry point
+│   │   ├── main.rs             # Calls petal_lib::run()
+│   │   ├── lib.rs              # The builder: plugins, state, commands, files opened by the OS
+│   │   ├── error.rs            # The Error every command returns, sent as a code
+│   │   ├── logger.rs           # tauri-plugin-log, with structured fields
+│   │   └── commands/file.rs    # take_pending_files
 │   ├── capabilities/
-│   │   └── default.json        # Permission scoping for the main window
+│   │   └── main.json           # What the main window may call
 │   ├── icons/                  # App icons for all platforms
-│   ├── gen/schemas/            # Auto-generated Tauri capability schemas
-│   ├── Cargo.toml              # Rust dependencies
-│   └── tauri.conf.json         # Tauri configuration
-├── tests/                      # Vitest component tests
-│   └── App.test.ts
-├── scripts/
-│   └── generate-icons.js       # Icon generation helper
+│   ├── build.rs                # The command allowlist
+│   ├── Cargo.toml              # Rust dependencies and Clippy lints
+│   └── tauri.conf.json         # Tauri configuration, CSP included
+├── tests/                      # Vitest suites, mirroring src/
+├── scripts/check/              # The standards gates, from @larrydarko/lint-config
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml              # CI pipeline (lint, type-check, test, build)
+│       ├── ci.yml              # CI pipeline (lint, type-check, test, build, Rust checks)
 │       └── release.yml         # Release / distribution workflow
 ├── .husky/                     # Git hooks (pre-commit, commit-msg)
-├── commitlint.config.ts        # Commit message linting rules
-├── eslint.config.ts            # ESLint flat config
+├── eslint.config.js            # ESLint, from @larrydarko/lint-config
+├── stylelint.config.js         # Stylelint, from @larrydarko/lint-config
+├── knip.config.js              # What the dead-code gate treats as an entry point
 ├── vite.config.ts              # Vite build configuration
 ├── vitest.config.ts            # Vitest test configuration
-├── tsconfig.json               # TypeScript config (app)
-└── tsconfig.node.json          # TypeScript config (Node / build scripts)
+└── tsconfig.*.json             # TypeScript projects: app, node (tool configs), test, scripts
 ```
 
 ## License

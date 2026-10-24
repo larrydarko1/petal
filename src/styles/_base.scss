@@ -1,0 +1,56 @@
+// The reset, the document shell, the scrollbar and the reduced-motion override.
+// Reached only through index.scss, which main.ts imports exactly once.
+@use '@/styles/variables' as *;
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    font-family: $font-family;
+}
+
+// The window is the app: the editor scrolls its own text, and a document-level
+// scrollbar would move the toolbar with it.
+html,
+body,
+#app {
+    height: 100%;
+    overflow: hidden;
+    background: $color-bg;
+    color: $color-text;
+}
+
+::-webkit-scrollbar {
+    width: $scrollbar-width;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: $color-border;
+    border-radius: $radius-sm;
+
+    &:hover {
+        background: $color-accent;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    // stylelint-disable declaration-no-important -- a global override has to beat the scoped SFC rules it is overriding, and specificity alone cannot reach them.
+    *,
+    *::before,
+    *::after {
+        animation-duration: $duration-none !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: $duration-none !important;
+        scroll-behavior: auto !important;
+    }
+    // stylelint-enable declaration-no-important
+}

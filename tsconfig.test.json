@@ -1,0 +1,16 @@
+{
+    // The suites under tests/, which import the app through `@/` and run in jsdom.
+    "extends": ["@vue/tsconfig/tsconfig.dom.json", "./tsconfig.base.json"],
+    "compilerOptions": {
+        /* Output & Build */
+        "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
+        "noEmit": true,
+
+        /* Paths & Types */
+        "paths": {
+            "@/*": ["./src/*"]
+        },
+        "types": ["vite/client"]
+    },
+    "include": ["tests/**/*.ts", "src/**/*.d.ts"]
+}

@@ -1,89 +1,92 @@
-use std::fs;
-use std::sync::Mutex;
-use tauri::{Manager, PhysicalSize};
+//! The app: its plugins, its managed state, the commands the webview may call, and
+//! the files the OS opens with it.
 
-#[cfg(target_os = "macos")]
-use tauri::{Emitter, RunEvent};
+mod commands;
+mod error;
+mod logger;
 
-// ── Tauri commands ───────────────────────────────────────────────────────
+use std::path::Path;
 
-#[tauri::command]
-fn read_text_file(path: String) -> Result<String, String> {
-    fs::read_to_string(&path).map_err(|e| e.to_string())
-}
+use tauri::{App, AppHandle, Emitter, Manager, PhysicalSize, RunEvent};
+use tauri_plugin_fs::FsExt;
 
-#[tauri::command]
-fn write_text_file(path: String, content: String) -> Result<(), String> {
-    fs::write(&path, &content).map_err(|e| e.to_string())
-}
-
-struct PendingFiles(Mutex<Vec<String>>);
-
-#[tauri::command]
-fn get_pending_files(state: tauri::State<PendingFiles>) -> Vec<String> {
-    let mut files = state.0.lock().unwrap();
-    files.drain(..).collect()
-}
-
-// ── App entry ────────────────────────────────────────────────────────────
+use crate::commands::file::{PendingFiles, FILE_OPENED};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    logger::log_panics();
     let app = tauri::Builder::default()
+        .plugin(logger::plugin())
+        .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
-        .plugin(tauri_plugin_opener::init())
-        .manage(PendingFiles(Mutex::new(Vec::new())))
-        .invoke_handler(tauri::generate_handler![read_text_file, write_text_file, get_pending_files])
+        .manage(PendingFiles::default())
+        .invoke_handler(tauri::generate_handler![commands::file::take_pending_files])
         .setup(|app| {
-            if let Some(monitor) = app.primary_monitor().ok().flatten() {
-                let screen_width = monitor.size().width as f64;
-                let screen_height = monitor.size().height as f64;
-
-                let window_width = (screen_width * 0.45) as u32;
-                let window_height = (screen_height * 0.6) as u32;
-                let min_width = (screen_width * 0.3) as u32;
-                let min_height = (screen_height * 0.4) as u32;
-
-                if let Some(window) = app.get_webview_window("main") {
-                    let _ = window.set_size(PhysicalSize::new(window_width, window_height));
-                    let _ = window.set_min_size(Some(PhysicalSize::new(min_width, min_height)));
-                }
-            }
-
-            // On Windows/Linux, files opened via OS association arrive as CLI arguments
+            log::info!(version:% = app.package_info().version; "App started");
+            size_main_window(app);
+            // Windows and Linux pass a file opened through the OS as an argument.
             #[cfg(not(target_os = "macos"))]
-            {
-                let args: Vec<String> = std::env::args().skip(1).collect();
-                for arg in args {
-                    let path = std::path::Path::new(&arg);
-                    if path.is_file() {
-                        if let Some(state) = app.try_state::<PendingFiles>() {
-                            state.0.lock().unwrap().push(arg);
-                        }
-                    }
+            for arg in std::env::args().skip(1) {
+                let path = std::path::PathBuf::from(arg);
+                if path.is_file() {
+                    queue_file(app.handle(), &path);
                 }
             }
-
             Ok(())
         })
-        .build(tauri::generate_context!())
-        .expect("error while building tauri application");
+        .build(tauri::generate_context!());
 
-    app.run(|_app_handle, _event| {
-        // macOS delivers opened files via Apple Events
-        #[cfg(target_os = "macos")]
-        if let RunEvent::Opened { urls } = _event {
-            for url in urls {
-                if url.scheme() == "file" {
-                    if let Ok(path) = url.to_file_path() {
-                        let path_str = path.to_string_lossy().to_string();
-                        if let Some(state) = _app_handle.try_state::<PendingFiles>() {
-                            state.0.lock().unwrap().push(path_str.clone());
-                        }
-                        let _ = _app_handle.emit("open-file", &path_str);
-                    }
-                }
-            }
+    match app {
+        Ok(app) => app.run(on_event),
+        // Nothing is on screen yet and the log may not be either: exiting non-zero is all there is.
+        Err(err) => {
+            log::error!(err:? = err; "App failed to start");
+            std::process::exit(1);
         }
-    });
+    }
+}
+
+fn on_event(app: &AppHandle, event: RunEvent) {
+    // macOS delivers a file opened through the OS as an Apple Event.
+    #[cfg(target_os = "macos")]
+    if let RunEvent::Opened { urls } = event {
+        for path in urls.into_iter().filter_map(|url| url.to_file_path().ok()) {
+            queue_file(app, &path);
+        }
+    }
+    #[cfg(not(target_os = "macos"))]
+    let _ = (app, event);
+}
+
+/// Grants the webview the file the OS opened, and hands it to the window.
+fn queue_file(app: &AppHandle, path: &Path) {
+    if let Err(err) = app.fs_scope().allow_file(path) {
+        log::error!(err:? = err; "Could not add an opened file to the fs scope");
+        return;
+    }
+    let path = path.to_string_lossy().into_owned();
+    match app.state::<PendingFiles>().0.lock() {
+        Ok(mut pending) => pending.push(path.clone()),
+        Err(_) => log::error!("Pending files lock poisoned; an opened file was dropped"),
+    }
+    if let Err(err) = app.emit(FILE_OPENED, &path) {
+        log::warn!(err:? = err; "Could not announce an opened file; the window collects it on load");
+    }
+}
+
+/// 45% × 60% of the primary monitor, and no smaller than 30% × 40%.
+fn size_main_window(app: &App) {
+    let (Ok(Some(monitor)), Some(window)) = (app.primary_monitor(), app.get_webview_window("main"))
+    else {
+        return;
+    };
+    let screen = monitor.size();
+    let size = PhysicalSize::new(screen.width * 45 / 100, screen.height * 60 / 100);
+    let min = PhysicalSize::new(screen.width * 30 / 100, screen.height * 40 / 100);
+    if let Err(err) = window
+        .set_size(size)
+        .and_then(|()| window.set_min_size(Some(min)))
+    {
+        log::warn!(err:? = err; "Could not size the main window");
+    }
 }

@@ -1,0 +1,5 @@
+{
+    "minTokens": 50,
+    "ignore": ["**/tests/**", "**/dist/**", "**/node_modules/**", "**/src-tauri/**"],
+    "format": ["vue", "typescript", "scss"]
+}

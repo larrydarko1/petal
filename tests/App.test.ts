@@ -1,162 +1,97 @@
-// App — component behaviour: initial state, modified indicator, file operations.
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { mount, flushPromises } from '@vue/test-utils';
-import App from '../src/App.vue';
+import { flushPromises, mount } from '@vue/test-utils';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// vi.hoisted ensures these refs are initialised before vi.mock factories run
-const { mockClose, closeHandlers } = vi.hoisted(() => ({
-    mockClose: vi.fn(),
-    closeHandlers: {
-        current: undefined as ((e: { preventDefault(): void }) => Promise<void>) | undefined,
-    },
-}));
+import App from '@/App.vue';
+import { takePendingFiles } from '@/bridge/commands';
+import { confirmWarning } from '@/bridge/dialogs';
+import { onFileOpened } from '@/bridge/events';
+import { chooseFileToOpen, chooseFileToSave, readFile } from '@/bridge/files';
+import { guardWindowClose } from '@/bridge/window';
 
-vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }));
-vi.mock('@tauri-apps/api/event', () => ({ listen: vi.fn().mockResolvedValue(vi.fn()) }));
-vi.mock('@tauri-apps/plugin-dialog', () => ({ open: vi.fn(), save: vi.fn(), ask: vi.fn() }));
-vi.mock('@tauri-apps/api/window', () => ({
-    getCurrentWindow: vi.fn(() => ({
-        onCloseRequested: vi.fn(async (cb: (e: { preventDefault(): void }) => Promise<void>) => {
-            closeHandlers.current = cb;
-            return vi.fn();
-        }),
-        close: mockClose,
-    })),
-}));
+vi.mock('@/bridge/commands');
+vi.mock('@/bridge/dialogs');
+vi.mock('@/bridge/events');
+vi.mock('@/bridge/files');
+vi.mock('@/bridge/window');
 
-import { invoke } from '@tauri-apps/api/core';
-import { open, save, ask } from '@tauri-apps/plugin-dialog';
+const unlistenFileOpened = vi.fn();
+const unlistenClose = vi.fn();
+
+const editor = (wrapper: ReturnType<typeof mount>): HTMLTextAreaElement =>
+    wrapper.find('textarea').element as HTMLTextAreaElement;
+
+beforeEach(() => {
+    vi.mocked(takePendingFiles).mockResolvedValue({ success: true, data: [] });
+    vi.mocked(onFileOpened).mockResolvedValue(unlistenFileOpened);
+    vi.mocked(guardWindowClose).mockResolvedValue(unlistenClose);
+    vi.mocked(readFile).mockResolvedValue({ success: true, data: 'saved text' });
+});
 
 describe('App', () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-        closeHandlers.current = undefined;
+    it('shows Untitled and no modified dot on a clean slate', async () => {
+        const wrapper = mount(App);
+        await flushPromises();
+        expect(wrapper.find('.file-name').text()).toBe('Untitled');
+        expect(wrapper.find('.modified-dot').exists()).toBe(false);
     });
 
-    describe('initial state', () => {
-        it('shows "Untitled" when no file is open', () => {
-            const wrapper = mount(App);
-            expect(wrapper.find('.file-name').text()).toBe('Untitled');
-        });
-
-        it('does not show the modified indicator on a clean slate', () => {
-            const wrapper = mount(App);
-            expect(wrapper.find('.modified-dot').exists()).toBe(false);
-        });
+    it('shows the modified dot once text is typed', async () => {
+        const wrapper = mount(App);
+        await wrapper.find('textarea').setValue('hello');
+        expect(wrapper.find('.modified-dot').exists()).toBe(true);
     });
 
-    describe('modified indicator', () => {
-        it('appears once text is typed', async () => {
-            const wrapper = mount(App);
-            await wrapper.find('textarea').setValue('hello');
-            expect(wrapper.find('.modified-dot').exists()).toBe(true);
-        });
+    it('opens the file the OS queued before the window was ready', async () => {
+        vi.mocked(takePendingFiles).mockResolvedValue({ success: true, data: ['/notes/todo.txt'] });
+        const wrapper = mount(App);
+        await flushPromises();
+        expect(wrapper.find('.file-name').text()).toBe('todo.txt');
+        expect(editor(wrapper).value).toBe('saved text');
     });
 
-    describe('newFile()', () => {
-        it('clears content without prompting when there are no unsaved changes', async () => {
-            const wrapper = mount(App);
-            await wrapper.find('[title="New file (⌘N)"]').trigger('click');
-            expect(vi.mocked(ask)).not.toHaveBeenCalled();
-            expect((wrapper.find('textarea').element as HTMLTextAreaElement).value).toBe('');
-        });
-
-        it('prompts before discarding and preserves content when user cancels', async () => {
-            vi.mocked(ask).mockResolvedValue(false);
-            const wrapper = mount(App);
-            await wrapper.find('textarea').setValue('unsaved content');
-            await wrapper.find('[title="New file (⌘N)"]').trigger('click');
-            await wrapper.vm.$nextTick();
-            expect(vi.mocked(ask)).toHaveBeenCalledOnce();
-            expect((wrapper.find('textarea').element as HTMLTextAreaElement).value).toBe('unsaved content');
-        });
+    it('opens a file the OS hands over while running', async () => {
+        const wrapper = mount(App);
+        await flushPromises();
+        const handler = vi.mocked(onFileOpened).mock.calls[0]?.[0];
+        handler?.('/notes/later.txt');
+        await flushPromises();
+        expect(wrapper.find('.file-name').text()).toBe('later.txt');
     });
 
-    describe('openFile()', () => {
-        it('does nothing when the native dialog is cancelled', async () => {
-            vi.mocked(open).mockResolvedValue(null);
-            const wrapper = mount(App);
-            await wrapper.find('[title="Open file (⌘O)"]').trigger('click');
-            await wrapper.vm.$nextTick();
-            expect(vi.mocked(invoke)).not.toHaveBeenCalledWith('read_text_file', expect.any(Object));
-        });
-
-        it('reads the file and updates the filename and content on success', async () => {
-            const fakePath = '/tmp/note.txt';
-            vi.mocked(open).mockResolvedValue(fakePath);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            vi.mocked(invoke).mockResolvedValue('file content' as any);
-            const wrapper = mount(App);
-            await wrapper.find('[title="Open file (⌘O)"]').trigger('click');
-            await wrapper.vm.$nextTick();
-            expect(vi.mocked(invoke)).toHaveBeenCalledWith('read_text_file', { path: fakePath });
-            expect(wrapper.find('.file-name').text()).toBe('note.txt');
-            expect(wrapper.find('.modified-indicator').exists()).toBe(false);
-        });
+    it('guards the window close with the unsaved-changes question', async () => {
+        vi.mocked(confirmWarning).mockResolvedValue(false);
+        const wrapper = mount(App);
+        await flushPromises();
+        await wrapper.find('textarea').setValue('unsaved');
+        const shouldClose = vi.mocked(guardWindowClose).mock.calls[0]?.[0];
+        expect(await shouldClose?.()).toBe(false);
+        expect(confirmWarning).toHaveBeenCalledOnce();
     });
 
-    describe('saveFile()', () => {
-        it('opens save-as dialog when no file is currently open', async () => {
-            vi.mocked(save).mockResolvedValue(null);
-            const wrapper = mount(App);
-            await wrapper.find('[title="Save file (⌘S)"]').trigger('click');
-            await wrapper.vm.$nextTick();
-            expect(vi.mocked(save)).toHaveBeenCalledOnce();
-        });
-
-        it('writes to the existing path without re-showing a dialog', async () => {
-            const fakePath = '/tmp/note.txt';
-            vi.mocked(open).mockResolvedValue(fakePath);
-            vi.mocked(invoke)
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .mockResolvedValueOnce('original content' as any) // read_text_file
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .mockResolvedValueOnce(undefined as any); // write_text_file
-            const wrapper = mount(App);
-            await wrapper.find('[title="Open file (⌘O)"]').trigger('click');
-            await wrapper.vm.$nextTick();
-            await wrapper.find('textarea').setValue('edited content');
-            await wrapper.find('[title="Save file (⌘S)"]').trigger('click');
-            await wrapper.vm.$nextTick();
-            expect(vi.mocked(save)).not.toHaveBeenCalled();
-            expect(vi.mocked(invoke)).toHaveBeenLastCalledWith('write_text_file', {
-                path: fakePath,
-                content: 'edited content',
-            });
-        });
+    it('wires each toolbar button to its action', async () => {
+        vi.mocked(chooseFileToOpen).mockResolvedValue({ success: true, data: null });
+        vi.mocked(chooseFileToSave).mockResolvedValue({ success: true, data: null });
+        const wrapper = mount(App);
+        await flushPromises();
+        await wrapper.find('[title="Open file (⌘O)"]').trigger('click');
+        await wrapper.find('[title="Save as (⌘⇧S)"]').trigger('click');
+        await wrapper.find('[title="Save file (⌘S)"]').trigger('click');
+        await flushPromises();
+        expect(chooseFileToOpen).toHaveBeenCalledOnce();
+        // An Untitled document's save is a save-as.
+        expect(chooseFileToSave).toHaveBeenCalledTimes(2);
+        await wrapper.find('textarea').setValue('draft');
+        vi.mocked(confirmWarning).mockResolvedValue(true);
+        await wrapper.find('[title="New file (⌘N)"]').trigger('click');
+        await flushPromises();
+        expect(editor(wrapper).value).toBe('');
     });
 
-    describe('close window with unsaved changes', () => {
-        it('does not prompt when there are no unsaved changes', async () => {
-            mount(App);
-            await flushPromises();
-            const event = { preventDefault: vi.fn() };
-            await closeHandlers.current?.(event);
-            expect(event.preventDefault).not.toHaveBeenCalled();
-            expect(vi.mocked(ask)).not.toHaveBeenCalled();
-        });
-
-        it('prevents close and shows a warning dialog when there are unsaved changes', async () => {
-            vi.mocked(ask).mockResolvedValue(false);
-            const wrapper = mount(App);
-            await flushPromises();
-            await wrapper.find('textarea').setValue('unsaved text');
-            const event = { preventDefault: vi.fn() };
-            await closeHandlers.current?.(event);
-            expect(event.preventDefault).toHaveBeenCalledOnce();
-            expect(vi.mocked(ask)).toHaveBeenCalledOnce();
-            expect(mockClose).not.toHaveBeenCalled();
-        });
-
-        it('destroys the window when the user confirms closing with unsaved changes', async () => {
-            vi.mocked(ask).mockResolvedValue(true);
-            const wrapper = mount(App);
-            await flushPromises();
-            await wrapper.find('textarea').setValue('unsaved text');
-            const event = { preventDefault: vi.fn() };
-            await closeHandlers.current?.(event);
-            expect(event.preventDefault).toHaveBeenCalledOnce();
-            expect(mockClose).toHaveBeenCalledOnce();
-        });
+    it('stops listening when it unmounts', async () => {
+        const wrapper = mount(App);
+        await flushPromises();
+        wrapper.unmount();
+        expect(unlistenFileOpened).toHaveBeenCalledOnce();
+        expect(unlistenClose).toHaveBeenCalledOnce();
     });
 });

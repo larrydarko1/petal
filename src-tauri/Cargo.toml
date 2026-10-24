@@ -18,9 +18,34 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = [] }
-tauri-plugin-opener = "2"
-tauri-plugin-dialog = "2"
+log = { version = "0.4", features = ["kv"] }
 serde = { version = "1", features = ["derive"] }
-serde_json = "1"
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-log = "2"
+thiserror = "2"
+time = { version = "0.3", features = ["formatting"] }
 
+[lints.rust]
+unsafe_code = "deny"
+
+[lints.clippy]
+all = { level = "deny", priority = -1 }
+pedantic = { level = "deny", priority = -1 }
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+todo = "deny"
+dbg_macro = "deny"
+print_stdout = "deny"
+print_stderr = "deny"
+let_underscore_must_use = "deny"
+allow_attributes_without_reason = "deny"
+# An exception is `#[expect(lint, reason = "…")]`, which fails once the lint stops firing,
+# so a suppression cannot outlive the code it was for.
+allow_attributes = "deny"
+# `commands.rs` beside `commands/`, the layout the Rust Book teaches, not `commands/mod.rs`.
+mod_module_files = "deny"
+# A command receives `State` and its arguments by value: that is how Tauri hands them over.
+needless_pass_by_value = "allow"

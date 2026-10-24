@@ -1,0 +1,17 @@
+{
+    "$schema": "../gen/schemas/desktop-schema.json",
+    "identifier": "main",
+    "description": "The editor window: open, edit and save a text file, and confirm before losing changes.",
+    "windows": ["main"],
+    "permissions": [
+        "core:default",
+        "core:window:allow-destroy",
+        "allow-take-pending-files",
+        "fs:allow-read-text-file",
+        "fs:allow-write-text-file",
+        "dialog:allow-open",
+        "dialog:allow-save",
+        "dialog:allow-message",
+        "log:default"
+    ]
+}
