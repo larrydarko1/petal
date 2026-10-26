@@ -34,9 +34,6 @@ jobs:
 
             - run: npm ci
 
-            - name: Audit
-              run: npm run audit:check
-
             - name: Lint
               run: npm run lint
 
@@ -46,54 +43,15 @@ jobs:
             - name: Stylelint
               run: npm run stylelint
 
-            - name: package.json
-              run: npm run pkg:check
-
-            - name: Pipeline
-              run: npm run pipeline:check
-
-            - name: Code style
-              run: npm run code:check
-
-            - name: Declaration order
-              run: npm run declorder:check
-
-            - name: HTML standards
-              run: npm run html:check
-
-            - name: SCSS standards
-              run: npm run scss:check
-
-            - name: Refactoring markers
-              run: npm run refactor:check
-
-            - name: Tauri security
-              run: npm run security:check
-
-            - name: Tauri commands
-              run: npm run commands:check
-
-            - name: Error handling
-              run: npm run error:check
-
             - name: Type check
               run: npm run typecheck
-
-            - name: Duplication
-              run: npm run dup:check
-
-            - name: Dead code
-              run: npm run dead:check
-
-            - name: tsconfigs
-              run: npm run tsconfig:check
 
             - name: Tests (with 80% coverage enforcement)
               run: npm run test:coverage
 
-            # Reads the coverage summary the step above wrote.
-            - name: Testing standards
-              run: npm run test:check
+            # The testing gate reads the coverage summary the step above wrote.
+            - name: larry check
+              run: npm run check
 
             # The webview alone; `generate_context!` also needs dist/ to exist before Rust compiles.
             - name: Build (webview)
