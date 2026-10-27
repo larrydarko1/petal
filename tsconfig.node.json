@@ -1,6 +1,6 @@
 {
-    // The tool configs at the root. Vite and Vitest load them in Node, so they get
-    // Node's types and the bundler's resolution.
+    // The tool configs at the root, which Vite, Vitest and larry load in Node, so they
+    // get Node's types.
     "extends": "./tsconfig.base.json",
     "compilerOptions": {
         /* Output & Build */
@@ -19,5 +19,5 @@
         /* Module System */
         "moduleDetection": "force"
     },
-    "include": ["vite.config.ts", "vitest.config.ts"]
+    "include": ["vite.config.ts", "vitest.config.ts", "larry.config.ts"]
 }
