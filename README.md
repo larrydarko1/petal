@@ -238,7 +238,7 @@ petal/
 │   ├── Cargo.toml              # Rust dependencies and Clippy lints
 │   └── tauri.conf.json         # Tauri configuration: CSP, Linux bundle targets
 ├── tests/                      # Vitest suites, mirroring src/
-├── design/                     # Source design files: icon (PSD, SVG) and the README banner
+├── design/                     # Source design files: the app icon (PSD) and the README banner
 ├── .github/
 │   ├── actions/node-setup/     # Node 24 + npm ci, shared by every Node job
 │   ├── assets/                 # README banner and demo screenshot
