@@ -1,0 +1,28 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Rendered at 2x into .github/assets/banner.png: a headless Chromium screenshot at 1500x250, device scale 2. -->
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=block" rel="stylesheet">
+<style>
+  html, body { margin: 0; }
+  body {
+    width: 1500px; height: 250px; overflow: hidden;
+    background: #1e1e2e;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    position: relative;
+  }
+  /* a faint editor gutter: line numbers down the left edge */
+  .gutter {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 64px;
+    background: #181825; border-right: 1px solid #313244;
+    display: flex; flex-direction: column; justify-content: center; gap: 14px;
+    color: #45475a; font-size: 16px; text-align: right; padding-right: 16px; box-sizing: border-box;
+  }
+  .word { color: #cdd6f4; font-size: 104px; font-weight: 500; letter-spacing: -3px; line-height: 1; display: flex; align-items: center; }
+  .dot { color: #cba6f7; }
+  .caret { width: 7px; height: 96px; background: #cba6f7; margin-left: 10px; border-radius: 2px; }
+</style></head>
+<body>
+  <div class="gutter"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span></div>
+  <div class="word">petal<span class="dot">.</span><span class="caret"></span></div>
+</body></html>

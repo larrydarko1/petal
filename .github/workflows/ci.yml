@@ -23,16 +23,11 @@ jobs:
         timeout-minutes: 20
 
         steps:
-            - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
               with:
                   persist-credentials: false
 
-            - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
-              with:
-                  node-version: 24
-                  cache: npm
-
-            - run: npm ci
+            - uses: ./.github/actions/node-setup
 
             - name: Lint
               run: npm run lint
@@ -64,7 +59,7 @@ jobs:
                   sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
 
             - name: Install Rust stable
-              uses: dtolnay/rust-toolchain@efa25f7f19611383d5b0ccf2d1c8914531636bf9 # stable as of 2026-02-13
+              uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # master @ 2026-10-15
               with:
                   toolchain: stable
                   components: clippy, rustfmt
