@@ -134,8 +134,8 @@ jobs:
                       ```sh
                       git clone https://github.com/larrydarko1/Petal.git
                       cd Petal && npm ci
-                      npm run tauri:build:mac:universal   # macOS
-                      npm run tauri:build:win             # Windows
+                      npm run tauri:build:mac   # macOS
+                      npm run tauri:build:win   # Windows
                       ```
 
                       The result lands in `src-tauri/target/`. It is untested by the maintainer — bug reports
