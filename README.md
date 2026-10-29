@@ -163,7 +163,36 @@ From a [release](https://github.com/larrydarko1/Petal/releases), or from your ow
 
 - **AppImage** — `chmod +x` the file, then run it
 - **deb / rpm** — install with your package manager
-- **tar.gz** — extract anywhere and run the `petal` binary inside; it needs the system WebKitGTK (`libwebkit2gtk-4.1`), which the deb and rpm pull in for you
+- **tar.gz** — extract anywhere and run the `petal` binary inside; it needs the system WebKitGTK (`libwebkit2gtk-4.1`), which the deb and rpm pull in for you. See [From the tarball](#from-the-tarball) for one way to wire it into your desktop
+
+#### From the tarball
+
+The tarball is just the binary and the licence, so where it lives and how it shows up is yours to
+decide. One way, kept entirely in your home folder:
+
+```sh
+mkdir -p ~/.local/opt/petal
+tar -xf Petal_*_amd64.tar.gz -C ~/.local/opt/petal --strip-components=1
+
+# Icon — the tarball doesn't ship one
+curl -Lo ~/.local/opt/petal/icon.png \
+  https://raw.githubusercontent.com/larrydarko1/Petal/main/src-tauri/icons/128x128@2x.png
+
+# Menu entry, and Petal offered for .txt files
+mkdir -p ~/.local/share/applications
+cat > ~/.local/share/applications/petal.desktop <<EOF
+[Desktop Entry]
+Type=Application
+Name=Petal
+Exec=$HOME/.local/opt/petal/petal %F
+Icon=$HOME/.local/opt/petal/icon.png
+Terminal=false
+Categories=Utility;TextEditor;
+MimeType=text/plain;
+EOF
+```
+
+To remove it, delete `~/.local/opt/petal` and `~/.local/share/applications/petal.desktop`.
 
 ## Other platforms
 
