@@ -13,7 +13,7 @@ The code is MIT licensed. Forking it, learning from it, and shipping your own ve
 ## Reporting a bug
 
 Bug reports are welcome even though code contributions are not — use
-[GitHub Issues](https://github.com/larrydarko1/Petal/issues) and include your OS, your app
+[GitHub Issues](https://github.com/larrydarko1/petal/issues) and include your OS, your app
 version, and the steps to reproduce. Screenshots help. There is no service-level promise attached:
 issues are read, and fixed when they are worth fixing.
 

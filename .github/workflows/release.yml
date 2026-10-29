@@ -132,8 +132,8 @@ jobs:
                       [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) and build it yourself:
 
                       ```sh
-                      git clone https://github.com/larrydarko1/Petal.git
-                      cd Petal && npm ci
+                      git clone https://github.com/larrydarko1/petal.git
+                      cd petal && npm ci
                       npm run tauri:build:mac   # macOS
                       npm run tauri:build:win   # Windows
                       ```

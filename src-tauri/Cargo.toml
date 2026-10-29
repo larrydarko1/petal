@@ -1,7 +1,7 @@
 [package]
 name = "petal"
-version = "1.0.0"
-description = "A minimal text editor"
+version = "1.0.5"
+description = "A lightweight notepad that does simple things — open, edit, and save plain text files."
 authors = ["Lorenzo Mazzola"]
 edition = "2021"
 

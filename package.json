@@ -9,16 +9,16 @@
         "desktop",
         "vue"
     ],
-    "homepage": "https://github.com/larrydarko1/Petal#readme",
+    "homepage": "https://github.com/larrydarko1/petal#readme",
     "bugs": {
-        "url": "https://github.com/larrydarko1/Petal/issues"
+        "url": "https://github.com/larrydarko1/petal/issues"
     },
     "license": "MIT",
     "author": "Lorenzo Mazzola",
     "type": "module",
     "repository": {
         "type": "git",
-        "url": "https://github.com/larrydarko1/Petal.git"
+        "url": "https://github.com/larrydarko1/petal.git"
     },
     "scripts": {
         "dev": "tauri dev",

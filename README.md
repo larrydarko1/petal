@@ -1,6 +1,6 @@
 <img src=".github/assets/banner.png" alt="Petal">
 
-If you find Petal useful, consider [giving it a star ⭐](https://github.com/larrydarko1/Petal) — it helps others discover the project!
+If you find Petal useful, consider [giving it a star ⭐](https://github.com/larrydarko1/petal) — it helps others discover the project!
 
 Petal is a **minimal plain-text editor** for desktop built with **[Tauri 2](https://v2.tauri.app/)**, **Vue 3**, and TypeScript. Open, edit, and save `.txt` files — nothing more. No tabs, no plugins, no formatting, no bloat. Everything stays on your device: no cloud, no accounts, no tracking.
 
@@ -84,8 +84,8 @@ sudo apt-get install libwebkit2gtk-4.1-dev build-essential libxdo-dev libssl-dev
 1. **Clone the repository**
 
 ```sh
-git clone https://github.com/larrydarko1/Petal.git
-cd Petal
+git clone https://github.com/larrydarko1/petal.git
+cd petal
 ```
 
 2. **Install dependencies**
@@ -159,7 +159,7 @@ a local build doesn't make one. `tauri:build:mac` has to run on a Mac and `tauri
 
 ### Installing the App
 
-From a [release](https://github.com/larrydarko1/Petal/releases), or from your own build:
+From a [release](https://github.com/larrydarko1/petal/releases), or from your own build:
 
 - **AppImage** — `chmod +x` the file, then run it
 - **deb / rpm** — install with your package manager
@@ -176,7 +176,7 @@ tar -xf Petal_*_amd64.tar.gz -C ~/.local/opt/petal --strip-components=1
 
 # Icon — the tarball doesn't ship one
 curl -Lo ~/.local/opt/petal/icon.png \
-  https://raw.githubusercontent.com/larrydarko1/Petal/main/src-tauri/icons/128x128@2x.png
+  https://raw.githubusercontent.com/larrydarko1/petal/main/src-tauri/icons/128x128@2x.png
 
 # Menu entry, and Petal offered for .txt files
 mkdir -p ~/.local/share/applications
@@ -208,8 +208,8 @@ download, so neither OS quarantines it and no signature is needed. Install the
 [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) for your OS, then:
 
 ```sh
-git clone https://github.com/larrydarko1/Petal.git
-cd Petal && npm ci
+git clone https://github.com/larrydarko1/petal.git
+cd petal && npm ci
 
 npm run tauri:build:mac   # on a Mac — .dmg in src-tauri/target/release/bundle/dmg/
 npm run tauri:build:win   # on Windows — .exe in src-tauri/target/release/bundle/nsis/

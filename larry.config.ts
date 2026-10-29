@@ -29,7 +29,20 @@ export default defineConfig({
                 { files: /^src-tauri\/src\/commands\/.*\.rs$/, require: 'rustdoc' },
             ],
         },
-        'contrast': { skip: 'No script ran it before larry upgrade.' },
+        // Text is the three text tokens on the two surfaces. The accent only fills shapes and the translucent
+        // hover and selection washes sit under text already measured, so none of them is measured here.
+        'contrast': {
+            themes: {
+                source: 'scss-maps',
+                file: 'src/styles/_variables.scss',
+                reference: 'default',
+                emitFile: 'src/styles/_theme.scss',
+                mixinFile: 'src/styles/_theme.scss',
+            },
+            text: ['text', 'text-muted', 'placeholder'],
+            backgrounds: ['bg', 'surface'],
+            scan: ['src'],
+        },
         // knip sees only the webview. A Rust command nothing invokes is the Tauri gates' job, and a plugin
         // only loaded from Rust belongs under `ignoreDependencies` in knip.config.js with a reason, never in
         // a raised budget. Budgets are all zero and stay there.
@@ -62,8 +75,9 @@ export default defineConfig({
             baseScss: 'src/styles/_base.scss',
             require: ['lang', 'charset', 'appMount', 'viewport', 'title'],
         },
-        'i18n': { skip: 'No script ran it before larry upgrade.' },
-        'licenses': { skip: 'No script ran it before larry upgrade.' },
+        'i18n': { skip: 'English only: the UI is four button labels and a handful of dialog messages.' },
+        // The source is public under MIT, so the shipped webview's dependencies need only be open-licensed.
+        'licenses': { distribution: 'open' },
         // A Tauri app has no `main`, `os` or `build`: the entry point, the targets and the bundle are
         // tauri.conf.json's. `version` is still owed: the app reads it from here.
         'package-json': {
@@ -116,7 +130,7 @@ export default defineConfig({
             },
             html: ['index.html'],
         },
-        'secrets': { skip: 'No script ran it before larry upgrade.' },
+        'secrets': {},
         // `e2e: false` is a decision, not a gap: driving the real window means WebDriver through
         // tauri-driver, which has no macOS support, and macOS is where Petal is built. The bridge is tested
         // against Tauri's IPC mocks, the composables and App against a mocked bridge. Raise adding E2E before
