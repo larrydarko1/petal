@@ -76,3 +76,11 @@ jobs:
 
             - name: Rust tests
               run: npm run rust:test
+
+            # Licences, RustSec advisories, bans and sources, from src-tauri/deny.toml: what
+            # `npm run rust:deny` checks locally.
+            - name: cargo-deny
+              uses: EmbarkStudios/cargo-deny-action@3c6349835b2b7b196a839186cb8b78e02f7b5f25 # v2.1.1
+              with:
+                  manifest-path: src-tauri/Cargo.toml
+                  command: check
