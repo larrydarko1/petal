@@ -220,6 +220,10 @@ npm run tauri:build:win   # on Windows — .exe in src-tauri/target/release/bund
 This is a solo project, and it's a matter of resources rather than intent — self-built platforms
 are untested by the maintainer, and bug reports from them are fixed on a best-effort basis.
 
+## Releases
+
+Petal gets a feature release four times a year, on the second Tuesday of March, June, September and December. A bug that loses data, opens a security hole, crashes Petal, stops it opening or saving, or breaks a common task with no workaround is fixed within 7 days of being confirmed, in a release of its own. What the next release contains is listed under `[Unreleased]` in [CHANGELOG.md](CHANGELOG.md).
+
 ## Tech Stack
 
 - **Desktop:** [Tauri 2](https://v2.tauri.app/) (Linux releases; macOS and Windows build from source)
