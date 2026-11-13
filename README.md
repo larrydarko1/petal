@@ -73,6 +73,7 @@ The one thing Petal writes on its own is a diagnostic log, rotated at 1 MB with 
 
 - [Node.js](https://nodejs.org/) (v24+ recommended) and npm
 - [Rust](https://www.rust-lang.org/tools/install) (stable)
+- cargo-deny 0.20, for `npm run ci:check`: `cargo install --locked cargo-deny@0.20.2`
 - The [Tauri system dependencies](https://v2.tauri.app/start/prerequisites/) for your OS. On Debian/Ubuntu:
 
 ```sh
@@ -124,10 +125,11 @@ npm run format
 # Lint styles
 npm run stylelint
 
-# Rust: format check, Clippy, tests
+# Rust: format check, Clippy, tests, and cargo-deny (licences, advisories, sources)
 npm run rust:fmt
 npm run rust:lint
 npm run rust:test
+npm run rust:deny
 
 # Run every gate CI runs, in one go
 npm run ci:check
@@ -135,7 +137,7 @@ npm run ci:check
 
 Tests live in `tests/`, mirroring `src/`. The standards ESLint cannot see — dead code, declaration order, duplication, the SCSS architecture, the CI pipeline itself and more — are checked by the gates in `larry.config.ts`. `npm run check` runs them all, and `npx larry check dead-code scss-standards` runs the ones named. Three are Tauri's: `tauri-security` reads the CSP and the capabilities, `tauri-commands` follows each command from Rust to the bridge, and `error-handling/tauri` covers failures on both sides. The order and code-style gates read the Rust too.
 
-On every push and pull request, CI runs lint, format check, stylelint, type-check, tests with coverage, every gate (the audit among them), the webview build, and then the Rust checks — the release pipeline only triggers if CI passes.
+On every push and pull request, CI runs lint, format check, stylelint, type-check, tests with coverage, every gate (the audit among them), the webview build, and then the Rust checks, cargo-deny among them — the release pipeline only triggers if CI passes.
 
 ### Building for Production
 

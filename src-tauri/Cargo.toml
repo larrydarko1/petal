@@ -4,6 +4,9 @@ version = "1.0.5"
 description = "A lightweight notepad that does simple things — open, edit, and save plain text files."
 authors = ["Lorenzo Mazzola"]
 edition = "2021"
+license = "MIT"
+# An app, not a library: nothing is published to crates.io.
+publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

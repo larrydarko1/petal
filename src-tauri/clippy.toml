@@ -1,0 +1,2 @@
+# A failed `expect` in a test is the test failing with its message, not a frozen window.
+allow-expect-in-tests = true
