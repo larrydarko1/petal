@@ -102,7 +102,7 @@ export default defineConfig({
             },
         },
         'pipeline': {},
-        'refactoring': {},
+        'refactoring': { claudeCode: true },
         // One palette, `default`, as a map in _variables.scss that _theme.scss emits. The theme machinery
         // waits for a second palette and costs one selector until then.
         'scss-standards': {
