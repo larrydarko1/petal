@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The release schedule in the README: a feature release every quarter, and fixes for urgent bugs within 7 days.
 
+### Security
+
+- Updated two Rust libraries with published vulnerabilities: cookie to 0.18.3 and url to 2.5.9.
+
 ## [1.0.5] - 2026-10-29
 
 ### Fixed
