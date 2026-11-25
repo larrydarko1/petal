@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The release schedule in the README: a feature release every quarter, and fixes for urgent bugs within 7 days.
 
+### Changed
+
+- Petal's window is built for a WebKitGTK as recent as Safari 26 or newer, the first that runs all of ES2025.
+
 ## [1.0.5] - 2026-10-29
 
 ### Fixed
