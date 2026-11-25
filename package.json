@@ -55,7 +55,7 @@
         "vue": "^3.5.44"
     },
     "devDependencies": {
-        "@larrydarko/lint-config": "^0.2.0",
+        "@larrydarko/lint-config": "^0.3.0",
         "@tauri-apps/cli": "^2.12.4",
         "@types/node": "^24.9.1",
         "@vitejs/plugin-vue": "^6.0.10",
@@ -74,5 +74,14 @@
         "node": ">=24",
         "npm": ">=11"
     },
-    "private": true
+    "private": true,
+    "browserslist": [
+        "chrome >= 136",
+        "edge >= 136",
+        "firefox >= 134",
+        "safari >= 26",
+        "ios_saf >= 26",
+        "and_chr >= 136",
+        "and_ff >= 134"
+    ]
 }

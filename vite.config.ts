@@ -8,6 +8,7 @@ const host = process.env['TAURI_DEV_HOST'];
 // https://v2.tauri.app/start/frontend/vite/
 export default defineConfig({
     plugins: [vue()],
+    build: { target: 'es2025' }, // The ES year; the browsers are in package.json's browserslist
     resolve: {
         alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
     },

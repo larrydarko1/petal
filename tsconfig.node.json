@@ -8,10 +8,10 @@
         "noEmit": true,
 
         /* Target & Environment */
-        "target": "ES2024",
+        "target": "ES2025",
         "module": "ESNext",
         "moduleResolution": "bundler",
-        "lib": ["ES2024"],
+        "lib": ["ES2025"],
 
         /* Paths & Types */
         "types": ["node"],
